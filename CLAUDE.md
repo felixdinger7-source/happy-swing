@@ -58,4 +58,17 @@ Scene transitions always pass `{ level, score }` as init data. `GameScene.resume
 
 ## Git workflow
 
-All changes should be committed with clean descriptive messages and pushed to GitHub (`git push`). The remote is `https://github.com/felixdinger7-source/happy-swing`.
+After every meaningful unit of work — a new feature, a bug fix, a balance tweak, a refactor — commit and push immediately. Never leave working changes uncommitted at the end of a session.
+
+```bash
+git add <files>
+git commit -m "short descriptive message"
+git push
+```
+
+**Commit message rules:**
+- Present tense, imperative: "Add enemy shooter type" not "Added" or "Adding"
+- First line ≤ 72 chars; describe *what and why*, not *how*
+- One logical change per commit — don't bundle unrelated changes
+
+The remote is `https://github.com/felixdinger7-source/happy-swing`. Every push ensures the latest working state is saved and revertable from GitHub.
