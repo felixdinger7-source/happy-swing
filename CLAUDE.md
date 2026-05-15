@@ -33,13 +33,18 @@ Scene transitions always pass `{ level, score }` as init data. `GameScene.resume
 
 **Enemy types are data-driven.** `js/config/levels.js` exports `ENEMY_DEFS` (stats per type) and `LEVELS` (per-level spawn config). Adding a new enemy type requires: a new entry in both exports, a `_make*` method in `BootScene`, and a new `case` in `Enemy.updateAI()`. Shooter enemies own their own bullet group (`this.enemyBullets`) and the overlap with the player is lazily registered in `GameScene.update()` on first update.
 
-**Cross-scene communication** uses two patterns:
+**Cross-scene communication** uses two patterns — sometimes mixed within the same scene pair:
 - Init data (`scene.start('X', { ... })`) for one-time values at scene start.
-- Phaser events (`this.events.emit / .on`) for runtime updates — e.g., `GameScene` emits `player-hp` which `HUDScene` listens for to refresh hearts.
+- Phaser events (`this.events.emit / .on`) for async runtime updates — `GameScene` emits `player-hp`, `HUDScene` listens to refresh hearts.
+- Direct scene reference (`this.scene.get('HUD').updateKills(...)`) for synchronous calls from `GameScene` to `HUD` on kill. Both patterns coexist in `HUDScene`.
 
 **Particle system** is a plain `physics.add.group` with a custom `preUpdate` monkey-patched onto each particle via `createCallback`. Particles self-destruct via `_life` countdown; the group is shared across all enemy deaths (`this.particles` in `GameScene`).
 
 **World vs viewport:** The play area is 1600×1200; the canvas is 800×600. The camera follows the player with 0.1 lerp. All enemy spawn logic uses world coordinates (`_edgePosition` in `GameScene`). Mouse aim must convert screen coords to world coords: `scrollX + ptr.x`.
+
+**Depth layers** (set via `setDepth()`): background = 0, enemies = 8, player body = 10, player gun = 11, HUD elements = 200, scene overlays (scanlines, GameOver bg) = 300+. New game objects must be placed within this hierarchy or they'll render above/below unintended layers.
+
+**Physics debug:** To visualize collision bodies, set `arcade: { debug: true }` in `js/main.js`. Revert before committing.
 
 ## Key constants to tune
 
